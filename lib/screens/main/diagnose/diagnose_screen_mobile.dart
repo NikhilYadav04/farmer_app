@@ -14,7 +14,7 @@ class DiagnoseScreenMobile extends StatefulWidget {
 }
 
 class _DiagnoseScreenMobileState extends State<DiagnoseScreenMobile> {
-  final initialize controller = Get.put(initialize());
+  final DiagnoseController controller = Get.put(DiagnoseController());
 
   File? _imagefile;
 
@@ -77,18 +77,8 @@ class _DiagnoseScreenMobileState extends State<DiagnoseScreenMobile> {
                                 context, controller, _imagefile, () {
                           _addImage();
                         }, () {
-                           //controller.uploadImage(_imagefile, context);
+                          //controller.uploadImage(_imagefile, context);
                           //controller.getConservationStatus(context);
-                          controller.saveResponse(context, "SPinach", "Carrot", [
-                            {
-                                 "title":"Stomach pain",
-                                 "content":"Giloy can be used to treat fever and cough"
-                            },
-                            {
-                                 "title":"Intestine pain",
-                                 "content":"Giloy can be used to treat digestion issue"
-                            }
-                          ], ["Status","I am used to digest"], "");
                         }))),
                   );
                 },

@@ -6,6 +6,7 @@ import 'package:ai_plant_detecion/global/colors.dart';
 import 'package:ai_plant_detecion/screens/main/history/history_detail_screen_mobile.dart';
 import 'package:ai_plant_detecion/styling/appTheme.dart';
 import 'package:ai_plant_detecion/styling/sizeConfig.dart';
+import 'package:ai_plant_detecion/widgets/history_widgets.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloudinary_flutter/image/cld_image.dart';
 import 'package:cloudinary_url_gen/transformation/delivery/delivery.dart';
@@ -13,60 +14,89 @@ import 'package:cloudinary_url_gen/transformation/delivery/delivery_actions.dart
 import 'package:cloudinary_url_gen/transformation/resize/resize.dart';
 import 'package:cloudinary_url_gen/transformation/transformation.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 
-Widget historyList(HistoryController historyController,List<dynamic> list,int index,String url,String title,String name) {
-  return Padding(
-    padding: EdgeInsets.symmetric(
-        horizontal: 3.34 * SizeConfig.widthMultiplier,
-        vertical: 1.05 * SizeConfig.heightMultiplier),
-    child: Row(
-      children: [
-        Expanded(
-            flex: 1,
-            child: ClipRRect(
-                borderRadius:
-                    BorderRadius.circular(1.05 * SizeConfig.heightMultiplier),
-                child: url == "" ?  Image.asset("assets/icons/earth.png")  : CachedNetworkImage(imageUrl: url))),
-        Expanded(
-            flex: 1,
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                  horizontal: 2.23 * SizeConfig.widthMultiplier),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    " ${title}",
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 3.01 * SizeConfig.heightMultiplier,
-                        fontFamily: "CoreSansBold"),
-                  ),
-                  SizedBox(
-                    height: 5.02 * SizeConfig.heightMultiplier,
-                  ),
-                  InkWell(
-                    onTap: () => Get.to(() => HistoryDetailScreenMobile(historyController: historyController,list: list,index: index,),
-                        transition: Transition.rightToLeft),
-                    child: Text(
-                      " ${name} >",
-                      style: TextStyle(
-                          color: screenBackgroundColorGreen,
-                          fontSize: 2.31 * SizeConfig.heightMultiplier,
-                          fontFamily: "CoreSansBold"),
-                    ),
-                  ),
-                ],
+Widget historyList(HistoryController historyController, List<dynamic> list,
+    int index, String url, String title, String name,BuildContext context) {
+  return GestureDetector(
+    onTap: () {
+      Get.to(
+          () => HistoryDetailScreenMobile(
+                historyController: historyController,
+                list: list,
+                index: index,status: "saved",
               ),
-            ))
-      ],
+          transition: Transition.rightToLeft);
+    },
+    child: Padding(
+      padding: EdgeInsets.symmetric(
+          horizontal: 3.34 * SizeConfig.widthMultiplier,
+          vertical: 1.05 * SizeConfig.heightMultiplier),
+      child: Row(
+        children: [
+          Expanded(
+              flex: 1,
+              child: ClipRRect(
+                  borderRadius:
+                      BorderRadius.circular(1.05 * SizeConfig.heightMultiplier),
+                  child: url == ""
+                      ? Image.asset("assets/icons/earth.png")
+                      : CachedNetworkImage(imageUrl: url))),
+          Expanded(
+              flex: 1,
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                    horizontal: 2.23 * SizeConfig.widthMultiplier),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          " ${title}",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 3.01 * SizeConfig.heightMultiplier,
+                              fontFamily: "CoreSansBold"),
+                        ),
+                         InkWell(
+                            onTap: () {
+                              editDialog(historyController, () {
+                                //historyController.deleteResponse(context, "dummy");
+                                historyController.changeTitle(
+                                    context, list[index]["url"]);
+                              });
+                            },
+                            child: Icon(
+                              Icons.edit,
+                              color: Colors.white,
+                              size: 2.94944 * SizeConfig.heightMultiplier,
+                            ))
+                      ],
+                    ),
+                    SizedBox(
+                      height: 5.02 * SizeConfig.heightMultiplier,
+                    ),
+                      Text(
+                          " ${name} ",
+                          style: TextStyle(
+                              color: screenBackgroundColorGreen,
+                              fontSize: 3 * SizeConfig.heightMultiplier,
+                              fontFamily: "CoreSansBold"),
+                        ),
+                  ],
+                ),
+              ))
+        ],
+      ),
     ),
   );
 }
 
-Widget diseaseTextWidget(BuildContext context,String plant_name) {
+Widget diseaseTextWidget(BuildContext context, String plant_name) {
   return Column(
     children: [
       Row(
@@ -126,7 +156,7 @@ Widget remediesTextWIdget(BuildContext context, String text) {
   );
 }
 
-Widget checkWidget(BuildContext context, initialize controller) {
+Widget checkWidget(BuildContext context, DiagnoseController controller) {
   return Container(
     height: 26.33 * SizeConfig.heightMultiplier,
     decoration: BoxDecoration(
@@ -177,8 +207,8 @@ Widget checkWidget(BuildContext context, initialize controller) {
   );
 }
 
-Widget getResponseWidget(BuildContext context, initialize controller,
-    File? _imagefile, void Function() onTap1,void Function() onTap2) {
+Widget getResponseWidget(BuildContext context, DiagnoseController controller,
+    File? _imagefile, void Function() onTap1, void Function() onTap2) {
   return Column(
     children: [
       Flexible(

@@ -1,4 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -16,11 +17,13 @@ class HistoryDetailScreenMobile extends StatelessWidget {
   final HistoryController historyController;
   List<dynamic> list;
   int index;
+  final status;
   HistoryDetailScreenMobile({
     Key? key,
     required this.historyController,
     required this.list,
     required this.index,
+    required this.status,
   }) : super(key: key);
 
   @override
@@ -49,18 +52,32 @@ class HistoryDetailScreenMobile extends StatelessWidget {
                           size: 4.21 * SizeConfig.heightMultiplier,
                         ),
                       ),
-                      Icon(
-                        Icons.bookmark_add_outlined,
-                        color: Colors.white,
-                        size: 4.5 * SizeConfig.heightMultiplier,
-                      ),
+                      IconButton(
+                          onPressed: () {
+                            status == "saved"
+                                ? historyController.deleteResponse(
+                                    context, list[index]["url"])
+                                : historyController.saveResponse(
+                                    context,
+                                    list[index]["title"],
+                                    list[index]["plant_name"],
+                                    list[index]["med_uses"],
+                                    list[index]["cons_status"],
+                                    list[index]["url"]);
+                          },
+                          icon: Icon(
+                            status == "saved"
+                                ? Icons.delete
+                                : list[index]["status"]
+                                    ? Icons.bookmark
+                                    : Icons.bookmark_add_outlined,
+                            color: Colors.white,
+                            size: 4.5 * SizeConfig.heightMultiplier,
+                          )),
                     ]),
 
                 //* title text
-                titleText(historyController, () {
-                  //historyController.deleteResponse(context, "dummy");
-                  historyController.changeTitle(context, "dummy");
-                }, list[index]["title"]),
+                titleText(historyController, list[index]["title"]),
                 SizedBox(
                   height: 2.10674 * SizeConfig.heightMultiplier,
                 ),

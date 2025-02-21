@@ -6,20 +6,39 @@ import 'dart:typed_data';
 
 import 'package:ai_plant_detecion/styling/strings.dart';
 import 'package:ai_plant_detecion/styling/toastMessage.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart' as dio;
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
+import 'package:get/get_rx/get_rx.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:image/image.dart' as img;
 import 'package:logger/logger.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
-class initialize extends GetxController {
+class DiagnoseController extends GetxController {
+  @override
+  void onInit() async {
+    // TODO: implement onInit
+    super.onInit();
+    final email = FirebaseAuth.instance.currentUser!.email;
+    CollectionReference collectionReference =
+        FirebaseFirestore.instance.collection('profile_photo');
+    QuerySnapshot querySnapshot =
+        await collectionReference.where('email', isEqualTo: email).get();
+
+    if (querySnapshot.docs.isEmpty) {
+      final docs = querySnapshot.docs.first;
+      profile_url.value = docs["url"];
+    }
+  }
+
+  RxString profile_url = "".obs;
+
   //* variable to open diagnose box
   RxBool diagnoseShow = false.obs;
 
@@ -219,56 +238,34 @@ class initialize extends GetxController {
     }
   }
 
-  //* save response to database
-  Future<String> saveResponse(
-      BuildContext context,
-      String title,
-      String plantName,
-      List<dynamic> med_uses,
-      List<dynamic> cons_status,
-      String url) async {
+  //* upload profile image
+  Future<void> uploadProfile(File? image, BuildContext context) async {
     try {
-      final email = FirebaseAuth.instance.currentUser!.email!;
+      String profile_url = await uploadImage(image, context);
+      final email = FirebaseAuth.instance.currentUser!.email;
+
+      if (profile_url == "Error") {
+        toastErrorSlide(context, "Cannot Upload Profile Photo");
+        return;
+      }
+
       CollectionReference collectionReference =
-          FirebaseFirestore.instance.collection('saved_response');
+          FirebaseFirestore.instance.collection('profile_photo');
       QuerySnapshot querySnapshot =
           await collectionReference.where('email', isEqualTo: email).get();
 
-      if (querySnapshot.docs.isEmpty) {
-        await collectionReference.add({
-          "email": email,
-          "responses": [
-            {
-              "title": title,
-              "url": url,
-              "plant_name": plantName,
-              "med_uses": med_uses,
-              "cons_status": cons_status
-            }
-          ]
-        });
-      } else {
+      if (querySnapshot.docs.isNotEmpty) {
         DocumentSnapshot documentSnapshot = querySnapshot.docs.first;
-        DocumentReference documentReference = documentSnapshot.reference;
-
-        await documentReference.update({
-          "responses": FieldValue.arrayUnion([
-            {
-              "title": title,
-              "url": url,
-              "plant_name": plantName,
-              "med_uses": med_uses,
-              "cons_status": cons_status
-            }
-          ])
-        });
+        await documentSnapshot.reference.update({"url": profile_url});
+      } else {
+        await collectionReference.add({"email": email, "url": profile_url});
       }
 
-      toastSuccessSlide(context, "Response Added Successfully");
-      return "Success";
+      toastSuccessSlide(context, "Profile Photo Added Successfully");
+      return;
     } catch (e) {
-      toastErrorSlide(context, "Error saving response");
-      return "Error";
+      toastErrorSlide(context, "Cannot Upload Profile Photo");
+      return;
     }
   }
 }

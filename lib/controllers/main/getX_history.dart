@@ -15,6 +15,10 @@ class HistoryController extends GetxController {
   //* bool
   RxInt expandedIndex = 0.obs;
 
+  //* lists
+  RxList<dynamic> list = [].obs;
+  RxList<dynamic> filtered_list = [].obs;
+
   //* functions
 
   //* for implementing expansion tile icon changes
@@ -29,6 +33,10 @@ class HistoryController extends GetxController {
   //* edit user title
   Future<void> changeTitle(BuildContext context, String url) async {
     try {
+      if (editController.text.length >= 8) {
+        toastErrorSlide(context, "Title length can be at most 8 words");
+        return;
+      }
       final email = FirebaseAuth.instance.currentUser!.email!;
       CollectionReference collectionReference =
           FirebaseFirestore.instance.collection('saved_response');
@@ -53,6 +61,61 @@ class HistoryController extends GetxController {
     }
   }
 
+  //* save response to database
+  Future<String> saveResponse(
+      BuildContext context,
+      String title,
+      String plantName,
+      List<dynamic> med_uses,
+      List<dynamic> cons_status,
+      String url) async {
+    try {
+      final email = FirebaseAuth.instance.currentUser!.email!;
+      CollectionReference collectionReference =
+          FirebaseFirestore.instance.collection('saved_response');
+      QuerySnapshot querySnapshot =
+          await collectionReference.where('email', isEqualTo: email).get();
+
+      if (querySnapshot.docs.isEmpty) {
+        await collectionReference.add({
+          "email": email,
+          "responses": [
+            {
+              "title": title,
+              "url": url,
+              "plant_name": plantName,
+              "med_uses": med_uses,
+              "cons_status": cons_status,
+              "status": true
+            }
+          ]
+        });
+      } else {
+        DocumentSnapshot documentSnapshot = querySnapshot.docs.first;
+        DocumentReference documentReference = documentSnapshot.reference;
+
+        await documentReference.update({
+          "responses": FieldValue.arrayUnion([
+            {
+              "title": title,
+              "url": url,
+              "plant_name": plantName,
+              "med_uses": med_uses,
+              "cons_status": cons_status,
+              "status": true
+            }
+          ])
+        });
+      }
+
+      toastSuccessSlide(context, "Response Added Successfully");
+      return "Success";
+    } catch (e) {
+      toastErrorSlide(context, "Error saving response");
+      return "Error";
+    }
+  }
+
   //* delete saved response
   Future<void> deleteResponse(BuildContext context, String url) async {
     try {
@@ -70,7 +133,7 @@ class HistoryController extends GetxController {
       await documentSnapshot.reference.update({"responses": responses});
 
       toastSuccessSlide(context, "Deleted Successfully");
-      // Get.back();
+      Get.back();
     } catch (e) {
       print(e.toString());
     }
@@ -83,5 +146,28 @@ class HistoryController extends GetxController {
         .collection("saved_response")
         .where('email', isEqualTo: email)
         .snapshots();
+  }
+
+  //* filter item
+  void filterItem(String keyword) {
+    if (keyword.isEmpty) {
+      filtered_list.value = list;
+    } else {
+      filtered_list.value = list
+          .where((item) => item["title"]
+              .toString()
+              .toLowerCase()
+              .contains(keyword.toLowerCase()))
+          .toList();
+      print(filtered_list);
+    }
+  }
+
+  List<dynamic> getList(AsyncSnapshot snapshot) {
+    final doc = snapshot.data!.docs.first;
+    list.value = doc["responses"];
+    filtered_list.value = list;
+
+    return filtered_list;
   }
 }
