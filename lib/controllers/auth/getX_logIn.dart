@@ -66,17 +66,6 @@ class LogInController extends GetxController {
     }
   }
 
-  //* logout
-  Future<void> logout() async {
-    try {
-      await HelperFunctions.setAuthStatus(false);
-      await FirebaseAuth.instance.signOut();
-      Get.offAll(() => LoginScreenMobile(), transition: Transition.downToUp);
-    } catch (e) {
-      print(e.toString());
-    }
-  }
-
   RxBool obscureText = false.obs;
 
   @override

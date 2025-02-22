@@ -24,54 +24,54 @@ class OnboardScreen1Mobile extends StatelessWidget {
           fit: StackFit.expand,
           children: [
             //* dropdown for selecting language
-            Positioned(
-              top: 1.58 * SizeConfig.heightMultiplier,
-              left: 82.14 * SizeConfig.widthMultiplier,
-              child: Obx(() => DropdownButtonHideUnderline(
-                    child: DropdownButton(
-                      borderRadius: BorderRadius.circular(
-                          0.84 * SizeConfig.heightMultiplier),
-                      isExpanded: _dropDownController.isExpanded.value,
-                      hint: Container(
-                        height: 9.42 * SizeConfig.heightMultiplier,
-                        width: 15.62 * SizeConfig.widthMultiplier,
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black, width: 2),
-                          borderRadius: BorderRadius.circular(
-                              0.84 * SizeConfig.heightMultiplier),
-                          color: Colors.white,
-                        ),
-                        child: Center(
-                          child: Image.asset(
-                            "assets/icons/earth.png",
-                            height: 3.68 * SizeConfig.heightMultiplier,
-                            width: 7.81 * SizeConfig.widthMultiplier,
-                          ),
-                        ),
-                      ),
-                      items: [
-                        DropdownMenuItem(
-                          value: 'en',
-                          child: dropDownItem(
-                              "English", "assets/icons/english.png"),
-                        ),
-                        DropdownMenuItem(
-                          value: 'hi',
-                          child:
-                              dropDownItem("Hindi", "assets/icons/hindi.png"),
-                        ),
-                        DropdownMenuItem(
-                          value: 'mr',
-                          child: dropDownItem(
-                              "Marathi", "assets/icons/marathi.png"),
-                        ),
-                      ],
-                      onChanged: (value) {
-                        _dropDownController.setLanguage(value);
-                      },
-                    ),
-                  )),
-            ),
+            // Positioned(
+            //   top: 1.58 * SizeConfig.heightMultiplier,
+            //   left: 82.14 * SizeConfig.widthMultiplier,
+            //   child: Obx(() => DropdownButtonHideUnderline(
+            //         child: DropdownButton(
+            //           borderRadius: BorderRadius.circular(
+            //               0.84 * SizeConfig.heightMultiplier),
+            //           isExpanded: _dropDownController.isExpanded.value,
+            //           hint: Container(
+            //             height: 9.42 * SizeConfig.heightMultiplier,
+            //             width: 15.62 * SizeConfig.widthMultiplier,
+            //             decoration: BoxDecoration(
+            //               border: Border.all(color: Colors.black, width: 2),
+            //               borderRadius: BorderRadius.circular(
+            //                   0.84 * SizeConfig.heightMultiplier),
+            //               color: Colors.white,
+            //             ),
+            //             child: Center(
+            //               child: Image.asset(
+            //                 "assets/icons/earth.png",
+            //                 height: 3.68 * SizeConfig.heightMultiplier,
+            //                 width: 7.81 * SizeConfig.widthMultiplier,
+            //               ),
+            //             ),
+            //           ),
+            //           items: [
+            //             DropdownMenuItem(
+            //               value: 'en',
+            //               child: dropDownItem(
+            //                   "English", "assets/icons/english.png"),
+            //             ),
+            //             DropdownMenuItem(
+            //               value: 'hi',
+            //               child:
+            //                   dropDownItem("Hindi", "assets/icons/hindi.png"),
+            //             ),
+            //             DropdownMenuItem(
+            //               value: 'mr',
+            //               child: dropDownItem(
+            //                   "Marathi", "assets/icons/marathi.png"),
+            //             ),
+            //           ],
+            //           onChanged: (value) {
+            //             _dropDownController.setLanguage(value);
+            //           },
+            //         ),
+            //       )),
+            // ),
 
             //* bottom card widget
             FractionallySizedBox(

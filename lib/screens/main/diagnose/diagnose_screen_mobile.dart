@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:ai_plant_detecion/controllers/main/getX_Diagnose.dart';
+import 'package:ai_plant_detecion/controllers/main/getX_appBar.dart';
 import 'package:ai_plant_detecion/global/colors.dart';
 import 'package:ai_plant_detecion/styling/sizeConfig.dart';
 import 'package:ai_plant_detecion/widgets/home_widgets.dart';
@@ -9,6 +10,9 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
 class DiagnoseScreenMobile extends StatefulWidget {
+  final appBarController AppBarController;
+
+  const DiagnoseScreenMobile({super.key, required this.AppBarController});
   @override
   State<DiagnoseScreenMobile> createState() => _DiagnoseScreenMobileState();
 }
@@ -26,6 +30,13 @@ class _DiagnoseScreenMobileState extends State<DiagnoseScreenMobile> {
         _imagefile = File(_pickedFile.path);
       }
     });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    widget.AppBarController.getProfilePhoto();
   }
 
   @override

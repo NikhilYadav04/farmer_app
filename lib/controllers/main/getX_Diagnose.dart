@@ -6,10 +6,8 @@ import 'dart:typed_data';
 
 import 'package:ai_plant_detecion/styling/strings.dart';
 import 'package:ai_plant_detecion/styling/toastMessage.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart' as dio;
 import 'package:dio/dio.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
@@ -21,22 +19,6 @@ import 'package:image/image.dart' as img;
 import 'package:logger/logger.dart';
 
 class DiagnoseController extends GetxController {
-  @override
-  void onInit() async {
-    // TODO: implement onInit
-    super.onInit();
-    final email = FirebaseAuth.instance.currentUser!.email;
-    CollectionReference collectionReference =
-        FirebaseFirestore.instance.collection('profile_photo');
-    QuerySnapshot querySnapshot =
-        await collectionReference.where('email', isEqualTo: email).get();
-
-    if (querySnapshot.docs.isEmpty) {
-      final docs = querySnapshot.docs.first;
-      profile_url.value = docs["url"];
-    }
-  }
-
   RxString profile_url = "".obs;
 
   //* variable to open diagnose box
@@ -235,37 +217,6 @@ class DiagnoseController extends GetxController {
     } catch (e) {
       toastErrorSlide(context, "Error : ${e.toString()}");
       return [];
-    }
-  }
-
-  //* upload profile image
-  Future<void> uploadProfile(File? image, BuildContext context) async {
-    try {
-      String profile_url = await uploadImage(image, context);
-      final email = FirebaseAuth.instance.currentUser!.email;
-
-      if (profile_url == "Error") {
-        toastErrorSlide(context, "Cannot Upload Profile Photo");
-        return;
-      }
-
-      CollectionReference collectionReference =
-          FirebaseFirestore.instance.collection('profile_photo');
-      QuerySnapshot querySnapshot =
-          await collectionReference.where('email', isEqualTo: email).get();
-
-      if (querySnapshot.docs.isNotEmpty) {
-        DocumentSnapshot documentSnapshot = querySnapshot.docs.first;
-        await documentSnapshot.reference.update({"url": profile_url});
-      } else {
-        await collectionReference.add({"email": email, "url": profile_url});
-      }
-
-      toastSuccessSlide(context, "Profile Photo Added Successfully");
-      return;
-    } catch (e) {
-      toastErrorSlide(context, "Cannot Upload Profile Photo");
-      return;
     }
   }
 }

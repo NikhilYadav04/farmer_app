@@ -2,6 +2,7 @@ import 'package:ai_plant_detecion/controllers/main/getX_appBar.dart';
 import 'package:ai_plant_detecion/global/colors.dart';
 import 'package:ai_plant_detecion/styling/appTheme.dart';
 import 'package:ai_plant_detecion/styling/sizeConfig.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -14,13 +15,26 @@ AppBar appBar(
     title: Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        InkWell(
-          onTap: onTap,
-          child: Image.asset(
-            "assets/icons/account.png",
-            height: 4.3 * SizeConfig.heightMultiplier,
-            width: 9.1 * SizeConfig.widthMultiplier,
-          ),
+        Obx(
+          () => InkWell(
+              onTap: onTap,
+              child: controller.profile_url.value == ""
+                  ? Image.asset(
+                      "assets/icons/account.png",
+                      height: 4.1 * SizeConfig.heightMultiplier,
+                      width: 9.82 * SizeConfig.widthMultiplier,
+                    )
+                  : ClipRRect(
+                      borderRadius: BorderRadius.circular(30),
+                      child: Center(
+                        child: CachedNetworkImage(
+                          imageUrl: controller.profile_url.value,
+                          height: 6.1 * SizeConfig.heightMultiplier,
+                          width: 13.82 * SizeConfig.widthMultiplier,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    )),
         ),
         Obx(
           () => Text(
@@ -59,11 +73,15 @@ BottomNavigationBar bottomBar(
     items: [
       BottomNavigationBarItem(
           label: AppLocalizations.of(context)!.bottomBarDiagnose,
-          icon: Icon(Icons.image_search_sharp,),
+          icon: Icon(
+            Icons.image_search_sharp,
+          ),
           backgroundColor: screenBackgroundColorIndigo),
       BottomNavigationBarItem(
           label: AppLocalizations.of(context)!.bottomBarHistory,
-          icon: Icon(Icons.history,),
+          icon: Icon(
+            Icons.history,
+          ),
           backgroundColor: screenBackgroundColorIndigo),
     ],
   );
