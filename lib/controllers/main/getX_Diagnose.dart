@@ -4,10 +4,14 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:ai_plant_detecion/controllers/main/getX_history.dart';
+import 'package:ai_plant_detecion/screens/main/history/history_detail_screen_mobile.dart';
 import 'package:ai_plant_detecion/styling/strings.dart';
 import 'package:ai_plant_detecion/styling/toastMessage.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart' as dio;
 import 'package:dio/dio.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
@@ -25,13 +29,106 @@ class DiagnoseController extends GetxController {
   RxBool diagnoseShow = false.obs;
 
   RxBool isExpanded = false.obs;
+  RxBool isLoadingResponse = false.obs;
 
   //* to change state of bool
   void change() {
     diagnoseShow.value = !diagnoseShow.value;
     isExpanded = false.obs;
   }
+
+  var logger = Logger();
+
   //* functions
+  //* main function to get response for model
+  Future<void> getResponse(BuildContext context, File? image,
+      HistoryController historyController) async {
+    try {
+      List<dynamic> medicinal_uses = [];
+      List<dynamic> conservation_status = [];
+      final dio_url = "https://plant-detection-server.onrender.com/predict";
+
+      isLoadingResponse.value = true;
+
+      //* api call to get plant name
+      if (image == null) {
+        isLoadingResponse.value = false;
+        toastErrorSlide(context, "Invalid image file");
+        return;
+      }
+
+      dio.Dio dioInstance = dio.Dio();
+
+      dio.FormData formData = dio.FormData.fromMap({
+        "file": await dio.MultipartFile.fromFile(
+          image.path,
+          filename: "image.jpg",
+          contentType:
+              dio.DioMediaType("image", "jpeg"), // Ensure correct content type
+        ),
+      });
+
+      dio.Response response = await dioInstance.post(
+        dio_url,
+        data: formData,
+        options: dio.Options(
+          sendTimeout: Duration(seconds: 8),
+          receiveTimeout: Duration(seconds: 70),
+        ),
+      );
+
+      final String plant = response.data["plant_name"];
+
+      logger.d("Plant name ${plant}");
+
+      //* get medicinal and conservation status
+      medicinal_uses = await getMedicineUses(context, plant);
+      conservation_status = await getConservationStatus(context, plant);
+
+      if (medicinal_uses.isEmpty && conservation_status.isEmpty) {
+        isLoadingResponse.value = false;
+        return;
+      }
+
+      //* save the image to cloudinary
+      String url = await uploadImage(image, context);
+
+      if (url == "Error") {
+        isLoadingResponse.value = false;
+        return;
+      }
+
+      //* save response to database
+      await saveResponse(
+          context, plant, plant, medicinal_uses, conservation_status, url);
+
+      final List<dynamic> responseList = [
+        {
+          "title": plant,
+          "plant_name": plant,
+          "med_uses": medicinal_uses,
+          "cons_status": conservation_status,
+          "url": url
+        }
+      ];
+
+      isLoadingResponse.value = false;
+
+      //* navigate to show response
+      Get.to(
+          () => HistoryDetailScreenMobile(
+              historyController: historyController,
+              list: responseList,
+              index: 0,
+              status: "response"),
+          transition: Transition.upToDown);
+    } catch (e) {
+      isLoadingResponse.value = false;
+      logger.d(e.toString());
+      toastErrorSlide(context, "Error getting response");
+      return;
+    }
+  }
 
   //* upload image to cloudinary
   Future<String> uploadImage(File? image, BuildContext context) async {
@@ -72,7 +169,7 @@ class DiagnoseController extends GetxController {
         final jsonMap = response.data;
 
         if (jsonMap['url'] != null) {
-          toastSuccessSlide(context, "Image Uploaded");
+          print("Image Uploaded");
           return jsonMap['url'];
         }
 
@@ -148,9 +245,65 @@ class DiagnoseController extends GetxController {
     }
   }
 
+  //* save response to database
+  Future<String> saveResponse(
+      BuildContext context,
+      String title,
+      String plantName,
+      List<dynamic> med_uses,
+      List<dynamic> cons_status,
+      String url) async {
+    try {
+      final email = FirebaseAuth.instance.currentUser!.email!;
+      CollectionReference collectionReference =
+          FirebaseFirestore.instance.collection('saved_response');
+      QuerySnapshot querySnapshot =
+          await collectionReference.where('email', isEqualTo: email).get();
+
+      if (querySnapshot.docs.isEmpty) {
+        await collectionReference.add({
+          "email": email,
+          "responses": [
+            {
+              "title": title,
+              "url": url,
+              "plant_name": plantName,
+              "med_uses": med_uses,
+              "cons_status": cons_status,
+              "status": true
+            }
+          ]
+        });
+      } else {
+        DocumentSnapshot documentSnapshot = querySnapshot.docs.first;
+        DocumentReference documentReference = documentSnapshot.reference;
+
+        await documentReference.update({
+          "responses": FieldValue.arrayUnion([
+            {
+              "title": title,
+              "url": url,
+              "plant_name": plantName,
+              "med_uses": med_uses,
+              "cons_status": cons_status,
+              "status": true
+            }
+          ])
+        });
+      }
+
+      toastSuccessSlide(context, "Response Added Successfully");
+      return "Success";
+    } catch (e) {
+      toastErrorSlide(context, "Error saving response");
+      return "Error";
+    }
+  }
+
   //* get responses from model
 
-  Future<List<dynamic>> getMedicineUses(BuildContext context) async {
+  Future<List<dynamic>> getMedicineUses(
+      BuildContext context, String plant) async {
     try {
       final model = GenerativeModel(
         model: 'gemini-2.0-flash-exp',
@@ -165,7 +318,7 @@ class DiagnoseController extends GetxController {
       );
       final chat = model.startChat(history: []);
 
-      final message = Strings.promptMedicine;
+      final message = Strings.promptMedicine(plant);
       final content = Content.text(message);
       var logger = Logger();
 
@@ -181,12 +334,14 @@ class DiagnoseController extends GetxController {
 
       return decoded;
     } catch (e) {
+      logger.d(e.toString());
       toastErrorSlide(context, "Error : ${e.toString()}");
       return [];
     }
   }
 
-  Future<List<dynamic>> getConservationStatus(BuildContext context) async {
+  Future<List<dynamic>> getConservationStatus(
+      BuildContext context, String plant) async {
     try {
       final model = GenerativeModel(
         model: 'gemini-2.0-flash-exp',
@@ -201,7 +356,7 @@ class DiagnoseController extends GetxController {
       );
       final chat = model.startChat(history: []);
 
-      final message = Strings.promptStatus;
+      final message = Strings.promptStatus(plant);
       final content = Content.text(message);
       var logger = Logger();
 

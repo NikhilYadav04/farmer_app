@@ -33,8 +33,8 @@ class HistoryController extends GetxController {
   //* edit user title
   Future<void> changeTitle(BuildContext context, String url) async {
     try {
-      if (editController.text.length >= 8) {
-        toastErrorSlide(context, "Title length can be at most 8 words");
+      if (editController.text.length >= 15) {
+        toastErrorSlide(context, "Title length can be at most 15 words");
         return;
       }
       final email = FirebaseAuth.instance.currentUser!.email!;
@@ -58,61 +58,6 @@ class HistoryController extends GetxController {
       toastSuccessSlide(context, "Title updated");
     } catch (e) {
       print(e.toString());
-    }
-  }
-
-  //* save response to database
-  Future<String> saveResponse(
-      BuildContext context,
-      String title,
-      String plantName,
-      List<dynamic> med_uses,
-      List<dynamic> cons_status,
-      String url) async {
-    try {
-      final email = FirebaseAuth.instance.currentUser!.email!;
-      CollectionReference collectionReference =
-          FirebaseFirestore.instance.collection('saved_response');
-      QuerySnapshot querySnapshot =
-          await collectionReference.where('email', isEqualTo: email).get();
-
-      if (querySnapshot.docs.isEmpty) {
-        await collectionReference.add({
-          "email": email,
-          "responses": [
-            {
-              "title": title,
-              "url": url,
-              "plant_name": plantName,
-              "med_uses": med_uses,
-              "cons_status": cons_status,
-              "status": true
-            }
-          ]
-        });
-      } else {
-        DocumentSnapshot documentSnapshot = querySnapshot.docs.first;
-        DocumentReference documentReference = documentSnapshot.reference;
-
-        await documentReference.update({
-          "responses": FieldValue.arrayUnion([
-            {
-              "title": title,
-              "url": url,
-              "plant_name": plantName,
-              "med_uses": med_uses,
-              "cons_status": cons_status,
-              "status": true
-            }
-          ])
-        });
-      }
-
-      toastSuccessSlide(context, "Response Added Successfully");
-      return "Success";
-    } catch (e) {
-      toastErrorSlide(context, "Error saving response");
-      return "Error";
     }
   }
 
@@ -169,5 +114,60 @@ class HistoryController extends GetxController {
     filtered_list.value = list;
 
     return filtered_list;
+  }
+
+  //* save response to database
+  Future<String> saveResponse(
+      BuildContext context,
+      String title,
+      String plantName,
+      List<dynamic> med_uses,
+      List<dynamic> cons_status,
+      String url) async {
+    try {
+      final email = FirebaseAuth.instance.currentUser!.email!;
+      CollectionReference collectionReference =
+          FirebaseFirestore.instance.collection('saved_response');
+      QuerySnapshot querySnapshot =
+          await collectionReference.where('email', isEqualTo: email).get();
+
+      if (querySnapshot.docs.isEmpty) {
+        await collectionReference.add({
+          "email": email,
+          "responses": [
+            {
+              "title": title,
+              "url": url,
+              "plant_name": plantName,
+              "med_uses": med_uses,
+              "cons_status": cons_status,
+              "status": true
+            }
+          ]
+        });
+      } else {
+        DocumentSnapshot documentSnapshot = querySnapshot.docs.first;
+        DocumentReference documentReference = documentSnapshot.reference;
+
+        await documentReference.update({
+          "responses": FieldValue.arrayUnion([
+            {
+              "title": title,
+              "url": url,
+              "plant_name": plantName,
+              "med_uses": med_uses,
+              "cons_status": cons_status,
+              "status": true
+            }
+          ])
+        });
+      }
+
+      toastSuccessSlide(context, "Response Added Successfully");
+      return "Success";
+    } catch (e) {
+      toastErrorSlide(context, "Error saving response");
+      return "Error";
+    }
   }
 }

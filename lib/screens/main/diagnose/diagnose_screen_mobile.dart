@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:ai_plant_detecion/controllers/main/getX_Diagnose.dart';
 import 'package:ai_plant_detecion/controllers/main/getX_appBar.dart';
+import 'package:ai_plant_detecion/controllers/main/getX_history.dart';
 import 'package:ai_plant_detecion/global/colors.dart';
 import 'package:ai_plant_detecion/styling/sizeConfig.dart';
 import 'package:ai_plant_detecion/widgets/home_widgets.dart';
@@ -11,8 +12,12 @@ import 'package:image_picker/image_picker.dart';
 
 class DiagnoseScreenMobile extends StatefulWidget {
   final appBarController AppBarController;
+  final HistoryController historyController;
 
-  const DiagnoseScreenMobile({super.key, required this.AppBarController});
+  const DiagnoseScreenMobile(
+      {super.key,
+      required this.AppBarController,
+      required this.historyController});
   @override
   State<DiagnoseScreenMobile> createState() => _DiagnoseScreenMobileState();
 }
@@ -24,7 +29,7 @@ class _DiagnoseScreenMobileState extends State<DiagnoseScreenMobile> {
 
   void _addImage() async {
     final XFile? _pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.camera);
+        await ImagePicker().pickImage(source: ImageSource.gallery);
     setState(() {
       if (_pickedFile != null) {
         _imagefile = File(_pickedFile.path);
@@ -88,8 +93,8 @@ class _DiagnoseScreenMobileState extends State<DiagnoseScreenMobile> {
                                 context, controller, _imagefile, () {
                           _addImage();
                         }, () {
-                          //controller.uploadImage(_imagefile, context);
-                          //controller.getConservationStatus(context);
+                          controller.getResponse(
+                              context, _imagefile, widget.historyController);
                         }))),
                   );
                 },

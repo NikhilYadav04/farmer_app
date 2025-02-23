@@ -124,7 +124,7 @@ class SignupScreenMobile extends StatelessWidget {
                   ? Center(
                       child: SpinKitFadingCircle(
                       color: AppTheme.screenBackgroundColorGreen,
-                      size: 30,
+                      size: 3.1601*SizeConfig.heightMultiplier,
                     ))
                   : authButton(AppLocalizations.of(context)!.signUp, () {
                       signUpSubmit(context);

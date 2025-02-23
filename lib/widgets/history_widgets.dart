@@ -52,7 +52,7 @@ Widget medicineList(HistoryController controller, List<dynamic> list) {
                               color: Colors.white,
                               fontFamily: "CoreSansLight",
                               fontWeight: FontWeight.w500,
-                              fontSize: 3.16012 * SizeConfig.heightMultiplier),
+                              fontSize: 2.95 * SizeConfig.heightMultiplier),
                         ),
                       ),
                       index + 1 == controller.expandedIndex.value
@@ -78,14 +78,14 @@ Widget medicineList(HistoryController controller, List<dynamic> list) {
                           horizontal: 3 * SizeConfig.widthMultiplier,
                         ),
                         child: Text(
-                          maxLines: 5,
+                          maxLines: 12,
                           overflow: TextOverflow.ellipsis,
                           "⦁ ${list[index]["content"]}.",
                           style: TextStyle(
                               fontFamily: "CoreSansLight",
                               fontWeight: FontWeight.w500,
                               color: Colors.white,
-                              fontSize: 1.8960 * SizeConfig.heightMultiplier),
+                              fontSize: 1.8 * SizeConfig.heightMultiplier),
                         ),
                       )
                     ],
@@ -108,7 +108,7 @@ Widget medicineDescription(List<dynamic> list) {
             horizontal: 1.11 * SizeConfig.widthMultiplier,
           ),
           child: Text(
-            maxLines: 4,
+            maxLines: 10,
             overflow: TextOverflow.ellipsis,
             "⦁ ${list[index]}",
             style: TextStyle(

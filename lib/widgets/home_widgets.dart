@@ -15,18 +15,20 @@ import 'package:cloudinary_url_gen/transformation/resize/resize.dart';
 import 'package:cloudinary_url_gen/transformation/transformation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 
 Widget historyList(HistoryController historyController, List<dynamic> list,
-    int index, String url, String title, String name,BuildContext context) {
+    int index, String url, String title, String name, BuildContext context) {
   return GestureDetector(
     onTap: () {
       Get.to(
           () => HistoryDetailScreenMobile(
                 historyController: historyController,
                 list: list,
-                index: index,status: "saved",
+                index: index,
+                status: "saved",
               ),
           transition: Transition.rightToLeft);
     },
@@ -62,7 +64,7 @@ Widget historyList(HistoryController historyController, List<dynamic> list,
                               fontSize: 3.01 * SizeConfig.heightMultiplier,
                               fontFamily: "CoreSansBold"),
                         ),
-                         InkWell(
+                        InkWell(
                             onTap: () {
                               editDialog(historyController, () {
                                 //historyController.deleteResponse(context, "dummy");
@@ -80,13 +82,13 @@ Widget historyList(HistoryController historyController, List<dynamic> list,
                     SizedBox(
                       height: 5.02 * SizeConfig.heightMultiplier,
                     ),
-                      Text(
-                          " ${name} ",
-                          style: TextStyle(
-                              color: screenBackgroundColorGreen,
-                              fontSize: 3 * SizeConfig.heightMultiplier,
-                              fontFamily: "CoreSansBold"),
-                        ),
+                    Text(
+                      " ${name} ",
+                      style: TextStyle(
+                          color: screenBackgroundColorGreen,
+                          fontSize: 3 * SizeConfig.heightMultiplier,
+                          fontFamily: "CoreSansBold"),
+                    ),
                   ],
                 ),
               ))
@@ -97,38 +99,18 @@ Widget historyList(HistoryController historyController, List<dynamic> list,
 }
 
 Widget diseaseTextWidget(BuildContext context, String plant_name) {
-  return Column(
-    children: [
-      Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Text(
-            "${AppLocalizations.of(context)!.plantText}",
-            style: TextStyle(fontSize: 4 * SizeConfig.heightMultiplier)
-                .copyWith(color: Colors.white, fontFamily: "CoreSansBold"),
-          ),
-          SizedBox(
-            width: 2.232 * SizeConfig.widthMultiplier,
-          ),
-          Text(
-            ":",
-            style: TextStyle(fontSize: 4 * SizeConfig.heightMultiplier)
-                .copyWith(color: Colors.white, fontFamily: "CoreSansBold"),
-          ),
-          SizedBox(
-            width: 3.34821 * SizeConfig.widthMultiplier,
-          ),
-          Text(
-            plant_name,
-            style: TextStyle(fontSize: 4 * SizeConfig.heightMultiplier)
-                .copyWith(
-                    color: screenBackgroundColorGreen,
-                    fontFamily: "CoreSansBold"),
-          ),
-        ],
-      ),
-    ],
-  );
+  return RichText(
+      text: TextSpan(
+          text: "${AppLocalizations.of(context)!.plantText} : ",
+          style: TextStyle(fontSize: 4 * SizeConfig.heightMultiplier)
+              .copyWith(color: Colors.white, fontFamily: "CoreSansBold"),
+          children: [
+        TextSpan(
+          text: plant_name,
+          style: TextStyle(fontSize: 4 * SizeConfig.heightMultiplier).copyWith(
+              color: screenBackgroundColorGreen, fontFamily: "CoreSansBold"),
+        )
+      ]));
 }
 
 Widget remediesTextWIdget(BuildContext context, String text) {
@@ -149,7 +131,7 @@ Widget remediesTextWIdget(BuildContext context, String text) {
           style: TextStyle(
               color: screenBackgroundColorGreen,
               fontFamily: "CoreSansMed",
-              fontSize: 3 * SizeConfig.heightMultiplier),
+              fontSize: 3.1 * SizeConfig.heightMultiplier),
         ),
       )
     ],
@@ -222,25 +204,38 @@ Widget getResponseWidget(BuildContext context, DiagnoseController controller,
                 )),
       Flexible(
           flex: 1,
-          child: ClipRRect(
-              borderRadius:
-                  BorderRadius.circular(0.52 * SizeConfig.heightMultiplier),
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: 3.6 * SizeConfig.heightMultiplier,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      button(onTap1, AppLocalizations.of(context)!.uploadText,
-                          5.5 * SizeConfig.heightMultiplier),
-                      button(onTap2, AppLocalizations.of(context)!.submitText,
-                          5.5 * SizeConfig.heightMultiplier)
-                    ],
-                  )
-                ],
-              )))
+          child: Obx(
+            () => ClipRRect(
+                borderRadius:
+                    BorderRadius.circular(0.52 * SizeConfig.heightMultiplier),
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: 3.6 * SizeConfig.heightMultiplier,
+                    ),
+                    controller.isLoadingResponse.value
+                        ? Center(
+                            child: SpinKitCircle(
+                              color: AppTheme.screenBackgroundColorGreen,
+                              size: 45,
+                            ),
+                          )
+                        : Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              button(
+                                  onTap1,
+                                  AppLocalizations.of(context)!.uploadText,
+                                  5.5 * SizeConfig.heightMultiplier),
+                              button(
+                                  onTap2,
+                                  AppLocalizations.of(context)!.submitText,
+                                  5.5 * SizeConfig.heightMultiplier)
+                            ],
+                          )
+                  ],
+                )),
+          ))
     ],
   );
 }

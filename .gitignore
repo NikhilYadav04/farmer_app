@@ -46,3 +46,6 @@ android/app/google-services.json
 .codegpt
 /lib/firebase_options.dart
 .env
+/lib/services/node_modules
+/lib/services/package.json
+/lib/services/package-lock.json

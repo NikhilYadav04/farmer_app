@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:ai_plant_detecion/controllers/main/getX_appBar.dart';
+import 'package:ai_plant_detecion/controllers/main/getX_history.dart';
 import 'package:ai_plant_detecion/global/colors.dart';
 import 'package:ai_plant_detecion/screens/main/diagnose/diagnose_screen_mobile.dart';
 import 'package:ai_plant_detecion/screens/main/history/history_screen_mobile.dart';
@@ -16,6 +17,7 @@ class AppbarScreenMobile extends StatefulWidget {
 
 class _AppbarScreenMobileState extends State<AppbarScreenMobile> {
   final appBarController controller = Get.put(appBarController());
+  final HistoryController historyController = Get.put(HistoryController());
 
   File? _image1;
 
@@ -33,7 +35,15 @@ class _AppbarScreenMobileState extends State<AppbarScreenMobile> {
         }, controller, context),
         body: Obx(() => IndexedStack(
               index: controller.currentPage.value,
-              children: [DiagnoseScreenMobile(AppBarController: controller,), HistoryScreenMobile()],
+              children: [
+                DiagnoseScreenMobile(
+                  AppBarController: controller,
+                  historyController: historyController,
+                ),
+                HistoryScreenMobile(
+                  controller: historyController,
+                )
+              ],
             )),
         //* bottom navigation bar
         bottomNavigationBar: Obx(() => Theme(

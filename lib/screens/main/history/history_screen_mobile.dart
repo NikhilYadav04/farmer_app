@@ -1,4 +1,3 @@
-import 'dart:math';
 
 import 'package:ai_plant_detecion/controllers/main/getX_history.dart';
 import 'package:ai_plant_detecion/styling/appTheme.dart';
@@ -11,9 +10,12 @@ import 'package:get/get.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:logger/logger.dart';
 
+// ignore: must_be_immutable
 class HistoryScreenMobile extends StatelessWidget {
-  final HistoryController controller = Get.put(HistoryController());
+  final HistoryController controller ;
   var logger = Logger();
+
+  HistoryScreenMobile({super.key, required this.controller});
 
   @override
   Widget build(BuildContext context) {
@@ -81,10 +83,10 @@ class HistoryScreenMobile extends StatelessWidget {
                 return Expanded(
                   child: Center(
                     child: Text(
-                      "No Data Available",
+                      "No Saved Responses!!",
                       style: TextStyle(
                         fontFamily: "CoreSansBold",
-                        fontSize: 24,
+                        fontSize: 2.52809*SizeConfig.heightMultiplier,
                         color: AppTheme.screenBackgroundColorGreen,
                       ),
                     ),
@@ -96,10 +98,10 @@ class HistoryScreenMobile extends StatelessWidget {
               return Expanded(
                 child: Center(
                   child: Text(
-                    "No Data Available",
+                    "No Saved Responses!!",
                     style: TextStyle(
                       fontFamily: "CoreSansBold",
-                      fontSize: 24,
+                      fontSize: 2.52809*SizeConfig.heightMultiplier,
                       color: AppTheme.screenBackgroundColorGreen,
                     ),
                   ),

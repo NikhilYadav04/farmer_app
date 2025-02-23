@@ -6,13 +6,12 @@ import 'package:ai_plant_detecion/screens/auth/login_screen_mobile.dart';
 import 'package:ai_plant_detecion/screens/main/appbar_screen_mobile.dart';
 import 'package:ai_plant_detecion/styling/appTheme.dart';
 import 'package:ai_plant_detecion/styling/responseiveLayout.dart';
-import 'package:ai_plant_detecion/screens/onboard/onboard_screen_1_mobile.dart';
-import 'package:ai_plant_detecion/screens/onboard/onboard_screen_1_tablet.dart';
 import 'package:ai_plant_detecion/styling/sizeConfig.dart';
 import 'package:cloudinary_flutter/cloudinary_context.dart';
 import 'package:cloudinary_url_gen/cloudinary.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_gemini/flutter_gemini.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
@@ -20,14 +19,14 @@ import 'package:get/get.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:logger/logger.dart';
 
-import 'styling/toastMessage.dart';
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   //runApp(DevicePreview(enabled: !kReleaseMode, builder: (context) => MyApp()));
 
   //* Initialize dotenv
   await dotenv.load();
+
+  await Gemini.init(apiKey: dotenv.get('GEMINI_API'));
 
   // ignore: deprecated_member_use
   CloudinaryContext.cloudinary =
@@ -73,7 +72,7 @@ class MyApp extends StatelessWidget {
                       color: AppTheme.containerColor,
                       child: Image.asset(
                         "assets/icons/plant.png",
-                        scale: 1.1,
+                        scale: 0.5,
                       ),
                     );
                   } else if (snapshot.connectionState == ConnectionState.done) {
@@ -90,13 +89,11 @@ class MyApp extends StatelessWidget {
                           tabletBody: LoginScreenMobile());
                     }
                   } else {
-                    toastErrorSlide(context,
-                        "Error launching the app , Please try again!!");
                     return Container(
                       color: AppTheme.containerColor,
                       child: Image.asset(
                         "assets/icons/plant.png",
-                        scale: 1.1,
+                        scale: 0.5,
                       ),
                     );
                   }

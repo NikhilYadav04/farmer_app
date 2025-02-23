@@ -1,5 +1,4 @@
 import 'package:ai_plant_detecion/helper/helper_functions.dart';
-import 'package:ai_plant_detecion/screens/auth/login_screen_mobile.dart';
 import 'package:ai_plant_detecion/screens/main/appbar_screen_mobile.dart';
 import 'package:ai_plant_detecion/styling/toastMessage.dart';
 import 'package:firebase_auth/firebase_auth.dart';

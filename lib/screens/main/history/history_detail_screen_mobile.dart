@@ -13,11 +13,11 @@ import 'package:ai_plant_detecion/widgets/history_widgets.dart';
 import 'package:ai_plant_detecion/widgets/home_widgets.dart';
 
 // ignore: must_be_immutable
-class HistoryDetailScreenMobile extends StatelessWidget {
+class HistoryDetailScreenMobile extends StatefulWidget {
   final HistoryController historyController;
   List<dynamic> list;
   int index;
-  final status;
+  String status;
   HistoryDetailScreenMobile({
     Key? key,
     required this.historyController,
@@ -25,6 +25,13 @@ class HistoryDetailScreenMobile extends StatelessWidget {
     required this.index,
     required this.status,
   }) : super(key: key);
+
+  @override
+  State<HistoryDetailScreenMobile> createState() => _HistoryDetailScreenMobileState();
+}
+
+class _HistoryDetailScreenMobileState extends State<HistoryDetailScreenMobile> {
+  bool isSaved = false;
 
   @override
   Widget build(BuildContext context) {
@@ -54,58 +61,59 @@ class HistoryDetailScreenMobile extends StatelessWidget {
                       ),
                       IconButton(
                           onPressed: () {
-                            status == "saved"
-                                ? historyController.deleteResponse(
-                                    context, list[index]["url"])
-                                : historyController.saveResponse(
+                            widget.status == "saved"
+                                ? widget.historyController.deleteResponse(
+                                    context, widget.list[widget.index]["url"])
+                                : widget.historyController.saveResponse(
                                     context,
-                                    list[index]["title"],
-                                    list[index]["plant_name"],
-                                    list[index]["med_uses"],
-                                    list[index]["cons_status"],
-                                    list[index]["url"]);
+                                    widget.list[widget.index]["title"],
+                                    widget.list[widget.index]["plant_name"],
+                                    widget.list[widget.index]["med_uses"],
+                                    widget.list[widget.index]["cons_status"],
+                                    widget.list[widget.index]["url"]);
+                                  setState(() {
+                                    isSaved = true;
+                                  });
                           },
                           icon: Icon(
-                            status == "saved"
-                                ? Icons.delete
-                                : list[index]["status"]
-                                    ? Icons.bookmark
-                                    : Icons.bookmark_add_outlined,
-                            color: Colors.white,
-                            size: 4.5 * SizeConfig.heightMultiplier,
-                          )),
+                              widget.status == "saved"
+                                  ? Icons.delete
+                                  : isSaved
+                                      ? Icons.bookmark
+                                      : Icons.bookmark_add_outlined,
+                              color: Colors.white,
+                              size: 4.5 * SizeConfig.heightMultiplier,
+                            ),),
                     ]),
 
                 //* title text
-                titleText(historyController, list[index]["title"]),
+                titleText(widget.historyController, widget.list[widget.index]["title"]),
                 SizedBox(
                   height: 2.10674 * SizeConfig.heightMultiplier,
                 ),
 
                 //*plant image
-                ClipRRect(
-                  borderRadius:
-                      BorderRadius.circular(1.05 * SizeConfig.heightMultiplier),
-                  child: list[index]["url"] == ""
-                      ? Image.asset("assets/icons/earth.png",
-                          scale: 0.21067 * SizeConfig.heightMultiplier)
-                      : CachedNetworkImage(
-                          imageUrl: list[index]["url"],
-                          scale: 0.21067 * SizeConfig.heightMultiplier,
-                        ),
+                Center(
+                  child: ClipRRect(
+                    borderRadius:
+                        BorderRadius.circular(1.05 * SizeConfig.heightMultiplier),
+                    child: widget.list[widget.index]["url"] == ""
+                        ? Image.asset("assets/icons/earth.png",
+                            scale: 0.21067 * SizeConfig.heightMultiplier)
+                        : CachedNetworkImage(
+                            imageUrl: widget.list[widget.index]["url"],
+                            scale: 0.1 * SizeConfig.heightMultiplier,
+                          ),
+                  ),
                 ),
                 SizedBox(
-                  height: 3.16022332244812 * SizeConfig.heightMultiplier,
+                  height: 4 * SizeConfig.heightMultiplier,
                 ),
 
                 //*plant and disease text
-                Padding(
-                  padding: EdgeInsets.symmetric(
-                      horizontal: 1.11 * SizeConfig.widthMultiplier),
-                  child: diseaseTextWidget(context, list[index]["plant_name"]),
-                ),
+                Center(child: diseaseTextWidget(context, widget.list[widget.index]["plant_name"])),
                 SizedBox(
-                  height: 2.63 * SizeConfig.heightMultiplier,
+                  height: 2.9 * SizeConfig.heightMultiplier,
                 ),
                 Padding(
                     padding: EdgeInsets.symmetric(
@@ -125,18 +133,18 @@ class HistoryDetailScreenMobile extends StatelessWidget {
                     child: remediesTextWIdget(
                         context, AppLocalizations.of(context)!.remedyText)),
                 SizedBox(
-                  height: 1.5 * SizeConfig.heightMultiplier,
+                  height: 1.7 * SizeConfig.heightMultiplier,
                 ),
                 Padding(
                     padding: EdgeInsets.symmetric(
                       horizontal: 2 * SizeConfig.widthMultiplier,
                     ),
                     child: medicineList(
-                        historyController, list[index]["med_uses"])),
+                        widget.historyController, widget.list[widget.index]["med_uses"])),
 
                 //* conservation status
                 SizedBox(
-                  height: 2.5 * SizeConfig.heightMultiplier,
+                  height: 2.7 * SizeConfig.heightMultiplier,
                 ),
                 Padding(
                     padding: EdgeInsets.symmetric(
@@ -156,9 +164,9 @@ class HistoryDetailScreenMobile extends StatelessWidget {
                 SizedBox(
                   height: 1 * SizeConfig.heightMultiplier,
                 ),
-                medicineDescription(list[index]["cons_status"]),
+                medicineDescription(widget.list[widget.index]["cons_status"]),
                 SizedBox(
-                  height: 15,
+                  height: 1.5800*SizeConfig.heightMultiplier,
                 ),
                 Padding(
                     padding: EdgeInsets.symmetric(
