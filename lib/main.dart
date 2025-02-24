@@ -21,7 +21,6 @@ import 'package:logger/logger.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  //runApp(DevicePreview(enabled: !kReleaseMode, builder: (context) => MyApp()));
 
   //* Initialize dotenv
   await dotenv.load();
@@ -37,6 +36,7 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   runApp(MyApp());
+  //runApp(DevicePreview(enabled: !kReleaseMode, builder: (context) => MyApp()));
 }
 
 class MyApp extends StatelessWidget {

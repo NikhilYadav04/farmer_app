@@ -43,53 +43,57 @@ Widget medicineList(HistoryController controller, List<dynamic> list) {
                 trailing: SizedBox.shrink(),
                 title: Obx(
                   () => Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Center(
+                      Flexible(
+                        flex: 30,
                         child: Text(
-                          "${list[index]["title"]}",
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontFamily: "CoreSansLight",
-                              fontWeight: FontWeight.w500,
-                              fontSize: 2.95 * SizeConfig.heightMultiplier),
-                        ),
+                            "${list[index]["title"]}",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontFamily: "CoreSansLight",
+                                fontWeight: FontWeight.w500,
+                                fontSize: 2.95 * SizeConfig.heightMultiplier),
+                          ),
                       ),
                       index + 1 == controller.expandedIndex.value
-                          ? Icon(
-                              Icons.arrow_drop_up_sharp,
-                              color: Colors.white,
-                              size: 3.7921 * SizeConfig.heightMultiplier,
+                          ? Flexible(
+                              flex: 1,
+                              child: Icon(
+                                Icons.arrow_drop_up_sharp,
+                                color: Colors.white,
+                                size: 3.7921 * SizeConfig.heightMultiplier,
+                              ),
                             )
-                          : Icon(
-                              Icons.arrow_drop_down_sharp,
-                              color: Colors.white,
-                              size: 3.7921 * SizeConfig.heightMultiplier,
+                          : Flexible(
+                              flex: 1,
+                              child: Icon(
+                                Icons.arrow_drop_down_sharp,
+                                color: Colors.white,
+                                size: 3.7921 * SizeConfig.heightMultiplier,
+                              ),
                             )
                     ],
                   ),
                 ),
                 children: [
-                  Column(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                          vertical: 1.053 * SizeConfig.heightMultiplier,
-                          horizontal: 3 * SizeConfig.widthMultiplier,
+                  SizedBox(
+                    
+                    child: Padding(
+                          padding: EdgeInsets.symmetric(
+                            vertical: 1.053 * SizeConfig.heightMultiplier,
+                            horizontal: 3 * SizeConfig.widthMultiplier,
+                          ),
+                          child: Text(
+                            "⦁ ${list[index]["content"]}",
+                            style: TextStyle(
+                                fontFamily: "CoreSansLight",
+                                fontWeight: FontWeight.w500,
+                                color: Colors.white,
+                                fontSize: 1.8 * SizeConfig.heightMultiplier),
+                          ),
                         ),
-                        child: Text(
-                          maxLines: 12,
-                          overflow: TextOverflow.ellipsis,
-                          "⦁ ${list[index]["content"]}.",
-                          style: TextStyle(
-                              fontFamily: "CoreSansLight",
-                              fontWeight: FontWeight.w500,
-                              color: Colors.white,
-                              fontSize: 1.8 * SizeConfig.heightMultiplier),
-                        ),
-                      )
-                    ],
-                  ),
+                  )
                 ],
               )),
         );

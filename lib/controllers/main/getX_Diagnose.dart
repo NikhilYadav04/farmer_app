@@ -82,10 +82,10 @@ class DiagnoseController extends GetxController {
       logger.d("Plant name ${plant}");
 
       //* get medicinal and conservation status
-      medicinal_uses = await getMedicineUses(context, plant);
       conservation_status = await getConservationStatus(context, plant);
+      medicinal_uses = await getMedicineUses(context, plant);
 
-      if (medicinal_uses.isEmpty && conservation_status.isEmpty) {
+      if (medicinal_uses.isEmpty || conservation_status.isEmpty) {
         isLoadingResponse.value = false;
         return;
       }
@@ -97,10 +97,6 @@ class DiagnoseController extends GetxController {
         isLoadingResponse.value = false;
         return;
       }
-
-      //* save response to database
-      await saveResponse(
-          context, plant, plant, medicinal_uses, conservation_status, url);
 
       final List<dynamic> responseList = [
         {
@@ -361,6 +357,7 @@ class DiagnoseController extends GetxController {
       var logger = Logger();
 
       final response = await chat.sendMessage(content);
+      logger.d(response.text);
 
       String cleanedResponse =
           response.text!.replaceAll(RegExp(r'```json|```'), '').trim();

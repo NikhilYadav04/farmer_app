@@ -93,8 +93,7 @@ class _DiagnoseScreenMobileState extends State<DiagnoseScreenMobile> {
                                 context, controller, _imagefile, () {
                           _addImage();
                         }, () {
-                          controller.getResponse(
-                              context, _imagefile, widget.historyController);
+                          controller.getResponse(context, _imagefile, widget.historyController);
                         }))),
                   );
                 },

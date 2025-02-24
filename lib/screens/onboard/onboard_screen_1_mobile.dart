@@ -72,6 +72,7 @@ class OnboardScreen1Mobile extends StatelessWidget {
             //         ),
             //       )),
             // ),
+            //* screens display widgt
 
             //* bottom card widget
             FractionallySizedBox(
@@ -113,7 +114,8 @@ class OnboardScreen1Mobile extends StatelessWidget {
               alignment: Alignment.bottomCenter,
               heightFactor: 0.336,
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 41.10 * SizeConfig.widthMultiplier),
+                padding: EdgeInsets.symmetric(
+                    horizontal: 41.10 * SizeConfig.widthMultiplier),
                 child: SmoothPageIndicator(
                   controller: controller.pageController, // PageController
                   count: 2, // Number of pages
@@ -131,7 +133,7 @@ class OnboardScreen1Mobile extends StatelessWidget {
             FractionallySizedBox(
               heightFactor: 0.130,
               alignment: Alignment.bottomCenter,
-              child:  bottomButtons(context,() {
+              child: bottomButtons(context, () {
                 Get.off(() => SignupScreenMobile(),
                     transition: Transition.downToUp);
               }, () {
